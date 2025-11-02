@@ -1,6 +1,7 @@
 # Threadopolis
 
 Threadopolis converts long-form AI assistant conversations into Obsidian-friendly markdown bundles. It ingests ChatGPT/GPT-5 JSON exports or saved HTML pages, produces a parent conversation index, and splits every turn into a deterministic `turnNNN_<mnemonic>.md` file with backlinks, navigation, and metadata. Playwright capture and an offline HTML-to-JSON extractor are available for advanced harvesting workflows.
+Threadopolis converts long-form AI assistant conversations into Obsidian-friendly markdown bundles. It ingests ChatGPT/GPT-5 JSON exports or saved HTML pages, produces a parent conversation index, and splits every turn into a deterministic `turnNNN_<mnemonic>.md` file with backlinks, navigation, and metadata. A Playwright-assisted capture flow is also included for advanced users who want to snapshot live conversations.
 
 ## Features
 
@@ -96,6 +97,7 @@ The `examples/` folder contains:
 
 - `json/chatgpt_sample.json` and the corresponding generated bundle in `json/output/`.
 - `html/conversation.html`, the derived JSON export in `html/conversation.json`, and the generated bundle in `html/output/`.
+- `html/conversation.html` and its generated bundle in `html/output/`.
 
 These are used in snapshot tests and act as small reference exports.
 
