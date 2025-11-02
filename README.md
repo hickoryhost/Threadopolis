@@ -1,6 +1,6 @@
 # Threadopolis
 
-Threadopolis converts long-form AI assistant conversations into Obsidian-friendly markdown bundles. It ingests ChatGPT/GPT-5 JSON exports or saved HTML pages, produces a parent conversation index, and splits every turn into a deterministic `turnNNN_<mnemonic>.md` file with backlinks, navigation, and metadata. A Playwright-assisted capture flow is also included for advanced users who want to snapshot live conversations.
+Threadopolis converts long-form AI assistant conversations into Obsidian-friendly markdown bundles. It ingests ChatGPT/GPT-5 JSON exports or saved HTML pages, produces a parent conversation index, and splits every turn into a deterministic `turnNNN_<mnemonic>.md` file with backlinks, navigation, and metadata. Playwright capture and an offline HTML-to-JSON extractor are available for advanced harvesting workflows.
 
 ## Features
 
@@ -9,6 +9,7 @@ Threadopolis converts long-form AI assistant conversations into Obsidian-friendl
 - Filename mnemonics generated from the first content words with collision-safe suffixes.
 - JSON and HTML parsers with timezone normalization.
 - Optional Playwright capture utility for harvesting conversations directly from a logged-in browser session.
+- Offline HTML-to-JSON extractor for saved “Save Page As” transcripts.
 - Thorough pytest suite with golden-file snapshots and parser edge cases.
 
 ## Quickstart
@@ -65,6 +66,15 @@ bin/threadopolis capture \
 
 > **Tip:** The capture command requires a working Playwright installation (`pip install playwright` + `playwright install chromium`) and a logged-in profile directory.
 
+### Convert a saved HTML page to JSON
+
+```bash
+bin/threadopolis capture \
+  --html conversation.html \
+  --out-json conversation.json \
+  --by-title
+```
+
 ## Library Usage
 
 ```python
@@ -85,7 +95,7 @@ print(f"Wrote {len(result.plan.files)} markdown files")
 The `examples/` folder contains:
 
 - `json/chatgpt_sample.json` and the corresponding generated bundle in `json/output/`.
-- `html/conversation.html` and its generated bundle in `html/output/`.
+- `html/conversation.html`, the derived JSON export in `html/conversation.json`, and the generated bundle in `html/output/`.
 
 These are used in snapshot tests and act as small reference exports.
 

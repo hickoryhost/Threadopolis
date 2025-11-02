@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from threadopolis.models import Conversation, Turn
 from threadopolis.pipeline import build_conversation
 from threadopolis.utils import ensure_timezone, parse_datetime
+from threadopolis.capture.html_capture import html_to_json
 
 
 def read_folder(folder: Path) -> dict:
@@ -83,3 +85,18 @@ def test_html_parser_handles_nested_blocks(tmp_path: Path):
         force=True,
     )
     assert "Cell" in result.conversation.turns[0].content
+
+
+def test_html_capture_to_json(tmp_path: Path):
+    out_json = tmp_path / "capture.json"
+    html_to_json(
+        html_path=Path("examples/html/conversation.html"),
+        out_json=out_json,
+        by_title=True,
+    )
+    payload = json.loads(out_json.read_text(encoding="utf-8"))
+    assert payload["title"] == "ChatGPT Conversation Example"
+    assert len(payload["messages"]) == 2
+    second = payload["messages"][1]
+    assert second["author"]["role"] == "assistant"
+    assert second["content"]["links"][0]["href"] == "https://example.com/docs"
