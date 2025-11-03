@@ -71,34 +71,76 @@ def capture_command(args: argparse.Namespace) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Threadopolis conversation exporter")
+    parser = argparse.ArgumentParser(
+        description=(
+            "Threadopolis conversation exporter for ChatGPT JSON or saved HTML"
+        )
+    )
     subparsers = parser.add_subparsers(dest="command")
 
     build_parser = subparsers.add_parser("build", help="Build a Threadopolis bundle")
-    build_parser.add_argument("--in", dest="in_path", required=True, help="Input file path")
-    build_parser.add_argument("--format", dest="format", choices=["json", "html"], required=True, help="Input format")
+    build_parser.add_argument(
+        "--in",
+        dest="in_path",
+        required=True,
+        help="Input file path (ChatGPT export JSON or saved HTML)",
+    )
+    build_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["json", "html"],
+        required=True,
+        help="Input format: json export or html page",
+    )
     build_parser.add_argument("--out", dest="out", required=True, help="Output directory")
     build_parser.add_argument("--title", dest="title", help="Override conversation title")
     build_parser.add_argument("--vault-root", dest="vault_root", help="Optional Obsidian vault root")
     build_parser.add_argument("--parent-name", dest="parent_name", default="Conversation.md", help="Parent index filename")
     build_parser.add_argument("--force", action="store_true", help="Overwrite non-empty directory")
     build_parser.add_argument("--dry-run", action="store_true", help="Show plan without writing")
-    build_parser.add_argument("--timezone", dest="timezone", help="Normalize timestamps to timezone")
+    build_parser.add_argument(
+        "--timezone",
+        dest="timezone",
+        help="Normalize timestamps to timezone (e.g. UTC, America/New_York)",
+    )
     build_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
-    build_parser.add_argument("--by-title", action="store_true", help="Derive title from HTML page title")
+    build_parser.add_argument(
+        "--by-title",
+        action="store_true",
+        help="When parsing HTML, derive title from page <title>",
+    )
     build_parser.add_argument("--strict", action="store_true", help="Reserved for future use")
     build_parser.add_argument("--infer-links", action="store_true", help="Reserved for future semantic crosslinks")
     build_parser.set_defaults(func=build_command)
 
-    capture_parser = subparsers.add_parser("capture", help="Capture a conversation via Playwright or convert HTML")
+    capture_parser = subparsers.add_parser(
+        "capture",
+        help="Capture a conversation via Playwright or convert saved HTML",
+    )
     source_group = capture_parser.add_mutually_exclusive_group(required=True)
     source_group.add_argument("--conv-url", dest="conv_url", help="Conversation URL to capture via Playwright")
     source_group.add_argument("--html", dest="html_path", help="Path to a saved conversation HTML file")
-    capture_parser.add_argument("--user-data-dir", dest="user_data_dir", help="Chromium user data dir for Playwright")
+    capture_parser.add_argument(
+        "--user-data-dir",
+        dest="user_data_dir",
+        help="Chromium user data dir for Playwright capture",
+    )
     capture_parser.add_argument("--out-json", dest="out_json", required=True, help="Output JSON path")
-    capture_parser.add_argument("--title", dest="title", help="Override conversation title when parsing HTML")
-    capture_parser.add_argument("--timezone", dest="timezone", help="Normalize timestamps to timezone when parsing HTML")
-    capture_parser.add_argument("--by-title", action="store_true", help="Derive title from HTML page title")
+    capture_parser.add_argument(
+        "--title",
+        dest="title",
+        help="Override conversation title when parsing HTML",
+    )
+    capture_parser.add_argument(
+        "--timezone",
+        dest="timezone",
+        help="Normalize timestamps to timezone when parsing HTML",
+    )
+    capture_parser.add_argument(
+        "--by-title",
+        action="store_true",
+        help="When parsing HTML, derive title from page <title>",
+    )
     capture_parser.set_defaults(func=capture_command)
 
     return parser
