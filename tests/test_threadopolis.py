@@ -4,6 +4,7 @@ from pathlib import Path
 
 from threadopolis.models import Conversation, Turn
 from threadopolis.pipeline import build_conversation
+from threadopolis.renderers.parent import render_parent
 from threadopolis.utils import ensure_timezone, parse_datetime
 
 
@@ -40,6 +41,36 @@ def test_build_allows_non_empty_output_directory(tmp_path: Path):
     golden = read_folder(Path("tests/golden/html"))
     assert generated == golden
     assert marker.read_text(encoding="utf-8") == "do not remove"
+
+
+def test_parent_skips_duplicate_conversation_heading():
+    convo = Conversation(
+        title="Conversation",
+        model=None,
+        conversation_id=None,
+        exported_at=None,
+        participants=[],
+        turns=[
+            Turn(
+                turn_index=1,
+                turn_id="t1",
+                role="user",
+                author="Tester",
+                content="Hello",
+                raw_content=None,
+                created_at=None,
+                links=[],
+                mnemonic="hello",
+            )
+        ],
+    )
+
+    rendered = render_parent(convo, parent_name="Conversation.md")
+
+    assert "# Conversation" not in rendered
+    lines = rendered.splitlines()
+    assert lines[0] == "## Turns"
+    assert lines[2] == "-[[turn001_hello.md]]"
 
 
 def test_mnemonic_collision_suffixes():
