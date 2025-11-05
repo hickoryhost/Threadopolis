@@ -238,12 +238,13 @@ def _collect_text(node: Node) -> str:
                 continue
 
             tag = item.tag.lower()
+            rendered_child = render(item)
 
             if tag in LINE_BREAK_ELEMENTS:
                 append_newlines(pieces, 1)
+                if rendered_child:
+                    pieces.append(rendered_child)
                 continue
-
-            rendered_child = render(item)
 
             if tag == "li":
                 parent = item.parent
