@@ -268,11 +268,13 @@ def _collect_text(node: Node) -> str:
                     pieces.append(prefix + first_line)
                     if len(lines) > 1:
                         indent = " " * max(len(prefix), 4)
-                        continuation = "\n".join(
-                            (indent + line) if line else indent
-                            for line in lines[1:]
-                        )
-                        pieces.append("\n" + continuation)
+                        continuation_lines = []
+                        for line in lines[1:]:
+                            if line:
+                                continuation_lines.append(indent + line)
+                            else:
+                                continuation_lines.append("")
+                        pieces.append("\n" + "\n".join(continuation_lines))
                 append_newlines(pieces, 1)
                 continue
 
