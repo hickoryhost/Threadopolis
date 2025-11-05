@@ -43,6 +43,28 @@ def test_collect_text_preserves_ordered_list_paragraphs(tmp_path: Path) -> None:
     assert conversation.turns[0].content == expected
 
 
+def test_collect_text_handles_break_content(tmp_path: Path) -> None:
+    html = """
+    <div class=\"conversation-turn\" data-role=\"assistant\" data-author-name=\"GPT\">
+      <div class=\"message-content\">
+        <ol>
+          <li>
+            <p><strong>Day 1–2:</strong><br>
+Start by softening the wax.</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+    """
+
+    html_path = tmp_path / "break.html"
+    html_path.write_text(html, encoding="utf-8")
+
+    conversation = parse_html_export(html_path)
+
+    assert conversation.turns[0].content == "1. Day 1–2:\n\n    Start by softening the wax."
+
+
 def test_render_turn_keeps_ordered_list_paragraphs_nested(tmp_path: Path) -> None:
     html = """
     <div class=\"conversation-turn\" data-role=\"assistant\" data-author-name=\"GPT\">
