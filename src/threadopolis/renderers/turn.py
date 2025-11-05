@@ -34,10 +34,11 @@ def render_turn(turn: Turn, conversation: Conversation, *, parent_name: str) -> 
             nav_line.append(f"← [[turn{prev_turn.turn_index:03d}_{prev_turn.mnemonic}.md]]")
         else:
             nav_line.append("← Start")
+        nav_line.append("\n")
         if next_turn:
-            nav_line.append(f"[[turn{next_turn.turn_index:03d}_{next_turn.mnemonic}.md]] →")
+            nav_line.append(f"  [[turn{next_turn.turn_index:03d}_{next_turn.mnemonic}.md]] →")
         else:
-            nav_line.append("End →")
+            nav_line.append("  End →")
         lines.append(" ".join(nav_line))
         lines.append("")
 
