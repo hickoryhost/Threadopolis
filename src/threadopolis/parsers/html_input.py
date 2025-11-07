@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, List, Optional
 
 from ..models import Conversation, Link, Turn
 from ..utils import ensure_timezone, mnemonic_from_content, parse_datetime
@@ -54,6 +54,22 @@ class Node:
     def get_attribute(self, name: str) -> Optional[str]:
         return self.attrs.get(name)
 
+    def find_attribute(self, names: Iterable[str]) -> Optional[str]:
+        for name in names:
+            value = self.get_attribute(name)
+            if value:
+                return value
+        return None
+
+    def find_attribute_in_ancestors(self, names: Iterable[str]) -> Optional[str]:
+        current: Optional["Node"] = self
+        while current:
+            value = current.find_attribute(names)
+            if value:
+                return value
+            current = current.parent
+        return None
+
 
 class SoupParser(HTMLParser):
     def __init__(self) -> None:
@@ -97,12 +113,51 @@ def parse_html_export(path: Path, *, timezone: Optional[str] = None, title: Opti
             return False
         attrs = node.attrs
         if any(key.startswith("data-") for key in attrs):
-            if attrs.get("data-message-id") or attrs.get("data-role") or attrs.get("data-author-role"):
+            if (
+                attrs.get("data-message-id")
+                or attrs.get("data-role")
+                or attrs.get("data-author-role")
+                or attrs.get("data-message-author-role")
+                or attrs.get("data-turn")
+            ):
                 return True
         class_attr = attrs.get("class", "")
         return "conversation-turn" in class_attr.split()
 
-    message_nodes = parser.root.find_all(is_message)
+    message_nodes_all = parser.root.find_all(is_message)
+
+    message_nodes = [
+        node
+        for node in message_nodes_all
+        if node.find_attribute(["data-message-id", "data-message-author-role", "data-role", "data-author-role"])
+    ]
+
+    if not message_nodes:
+        message_nodes = message_nodes_all
+
+    def node_priority(node: Node) -> int:
+        attrs = node.attrs
+        if attrs.get("data-message-author-role"):
+            return 4
+        if attrs.get("data-message-id"):
+            return 3
+        if attrs.get("data-role") or attrs.get("data-author-role"):
+            return 2
+        if attrs.get("data-turn"):
+            return 1
+        return 0
+
+    keyed_nodes: Dict[str, tuple[int, int, Node]] = {}
+    for idx, node in enumerate(message_nodes):
+        key = node.find_attribute_in_ancestors(["data-message-id", "data-turn-id", "id"])
+        if not key:
+            key = f"__index_{idx}"
+        priority = node_priority(node)
+        existing = keyed_nodes.get(key)
+        if not existing or priority > existing[0]:
+            keyed_nodes[key] = (priority, idx, node)
+
+    message_nodes = [entry[2] for entry in sorted(keyed_nodes.values(), key=lambda item: item[1])]
 
     if not message_nodes:
         def is_text_base(node: Node) -> bool:
@@ -110,14 +165,16 @@ def parse_html_export(path: Path, *, timezone: Optional[str] = None, title: Opti
         message_nodes = parser.root.find_all(is_text_base)
 
     for idx, node in enumerate(message_nodes, start=1):
-        role = node.get_attribute("data-role") or node.get_attribute("data-author-role")
+        role = node.find_attribute_in_ancestors(
+            ["data-role", "data-author-role", "data-message-author-role"]
+        )
         if not role:
             role = node.attrs.get("class", "unknown").split()[0] if node.attrs.get("class") else "unknown"
         author = node.get_attribute("data-author-name")
         if not author and role:
             author = role.title()
 
-        time_text = node.get_attribute("data-timestamp") or node.get_attribute("data-created")
+        time_text = node.find_attribute_in_ancestors(["data-timestamp", "data-created"])
         created_at = ensure_timezone(parse_datetime(time_text), timezone)
 
         content_node = node.find_first(lambda n: n is not node and n.tag.lower() == "div" and "message-content" in n.attrs.get("class", "").split())
@@ -131,7 +188,9 @@ def parse_html_export(path: Path, *, timezone: Optional[str] = None, title: Opti
             links.append(Link(text=_collect_text(link).strip(), href=link.get_attribute("href") or ""))
 
         mnemonic = mnemonic_from_content(content)
-        turn_id = node.get_attribute("data-message-id") or node.get_attribute("id")
+        turn_id = node.find_attribute_in_ancestors(
+            ["data-message-id", "id", "data-turn-id"]
+        )
 
         if author:
             participants.append(author)
@@ -145,7 +204,7 @@ def parse_html_export(path: Path, *, timezone: Optional[str] = None, title: Opti
                 content=content,
                 raw_content=None,
                 created_at=created_at,
-                data_turn=node.get_attribute("data-turn"),
+                data_turn=node.find_attribute_in_ancestors(["data-turn"]),
                 links=links,
                 mnemonic=mnemonic,
             )
