@@ -85,5 +85,5 @@ def test_render_turn_keeps_ordered_list_paragraphs_nested(tmp_path: Path) -> Non
     conversation = parse_html_export(html_path)
     rendered = render_turn(conversation.turns[0], conversation, parent_name="Conversation.md")
 
-    assert "[← Back to Conversation](Conversation.md)\n\n1. Day 1-2:" in rendered
+    assert "[← Back to Conversation]" not in rendered
     assert "1. Day 1-2:\n\n    Start by softening the wax." in rendered
