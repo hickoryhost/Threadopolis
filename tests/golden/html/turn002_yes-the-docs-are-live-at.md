@@ -1,5 +1,4 @@
-# Turn 2
-assistant
+# Turn 2 (assistant)
 
 2024-02-01T09:16:00+00:00 | as GPT
 
