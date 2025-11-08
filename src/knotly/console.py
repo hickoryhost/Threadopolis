@@ -5,7 +5,7 @@ class Console:
     """Minimal console compatible with the subset of Rich we use."""
 
     def log(self, message: str) -> None:
-        print(f"[threadopolis] {message}")
+        print(f"[knotly] {message}")
 
     def print(self, message: str) -> None:
         print(message)

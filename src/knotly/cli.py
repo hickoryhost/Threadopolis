@@ -39,7 +39,7 @@ def build_command(args: argparse.Namespace) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Threadopolis conversation exporter for saved ChatGPT HTML pages"
+        description="knotly conversation exporter for saved ChatGPT HTML pages"
     )
     parser.add_argument(
         "--in",
