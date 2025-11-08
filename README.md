@@ -1,6 +1,8 @@
-# Threadopolis
+# 🪢 knotly
 
-Threadopolis converts long-form AI assistant conversations into Obsidian-friendly markdown bundles. It ingests saved ChatGPT HTML pages, produces a parent conversation index, and splits every turn into a deterministic `turnNNN_<mnemonic>.md` file with backlinks, navigation, and metadata.
+Reorganizing conversations into knots of thought.
+
+knotly converts long-form AI assistant conversations into Obsidian-friendly markdown bundles. It ingests saved ChatGPT HTML pages, produces a parent conversation index, and splits every turn into a deterministic `turnNNN_<mnemonic>.md` file with backlinks, navigation, and metadata.
 
 ## Features
 
@@ -12,7 +14,7 @@ Threadopolis converts long-form AI assistant conversations into Obsidian-friendl
 
 ## Quickstart
 
-Threadopolis is pure Python 3.11+ with no external dependencies required for the core build flow.
+knotly is pure Python 3.11+ with no external dependencies required for the core build flow.
 
 ```bash
 python -m venv .venv
@@ -20,10 +22,10 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-The package exposes a console script at `bin/threadopolis`. You can also invoke the module directly:
+The package exposes a console script at `bin/knotly`. You can also invoke the module directly:
 
 ```bash
-python -m threadopolis.cli --help
+python -m knotly.cli --help
 ```
 
 ## CLI Usage
@@ -31,7 +33,7 @@ python -m threadopolis.cli --help
 ### Build from a saved HTML page
 
 ```bash
-bin/threadopolis \
+bin/knotly \
   --in examples/html/conversation.html \
   --out output/html-sample \
   --by-title
@@ -40,14 +42,14 @@ bin/threadopolis \
 ### Dry run a build
 
 ```bash
-bin/threadopolis --in export.html --out my-convo --dry-run -v
+bin/knotly --in export.html --out my-convo --dry-run -v
 ```
 
 ## Library Usage
 
 ```python
 from pathlib import Path
-from threadopolis import build_conversation
+from knotly import build_conversation
 
 result = build_conversation(
     input_path=Path("conversation.html"),
@@ -75,7 +77,7 @@ All golden snapshots live in `tests/golden/`. To update them, regenerate the exa
 
 ## Obsidian Tips
 
-- Place the generated output folder directly inside your vault or use `--vault-root /path/to/vault` to let Threadopolis do it for you.
+- Place the generated output folder directly inside your vault or use `--vault-root /path/to/vault` to let knotly do it for you.
 - The parent index (`Conversation.md` by default) links to every turn. Use Obsidian’s graph view to visualize the conversation links.
 - Each turn file reserves a **Related:** section for future semantic cross-links or manual notes.
 
@@ -87,7 +89,7 @@ All golden snapshots live in `tests/golden/`. To update them, regenerate the exa
 
 ## License
 
-Threadopolis is released under the [MIT License](LICENSE).
+knotly is released under the [MIT License](LICENSE).
 
 ## Changelog
 

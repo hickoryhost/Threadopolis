@@ -1,4 +1,4 @@
-"""Threadopolis conversation exporter."""
+"""knotly conversation exporter."""
 
 from .pipeline import build_conversation
 

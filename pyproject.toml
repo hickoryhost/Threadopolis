@@ -3,17 +3,17 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "threadopolis"
+name = "knotly"
 version = "0.1.0"
-description = "Split assistant conversations into Obsidian-ready markdown bundles."
+description = "Reorganizing conversations into knots of thought."
 readme = "README.md"
-authors = [{name = "Threadopolis Contributors"}]
+authors = [{name = "knotly Contributors"}]
 license = {text = "MIT"}
 requires-python = ">=3.11"
 dependencies = []
 
 [project.scripts]
-threadopolis = "threadopolis.cli:main"
+knotly = "knotly.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from threadopolis.parsers.html_input import parse_html_export
-from threadopolis.renderers.turn import render_turn
+from knotly.parsers.html_input import parse_html_export
+from knotly.renderers.turn import render_turn
 
 
 def test_collect_text_preserves_ordered_list_paragraphs(tmp_path: Path) -> None:

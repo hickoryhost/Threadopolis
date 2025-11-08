@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from threadopolis.models import Conversation, Turn
-from threadopolis.pipeline import build_conversation
-from threadopolis.renderers.parent import render_parent
-from threadopolis.utils import ensure_timezone, parse_datetime
+from knotly.models import Conversation, Turn
+from knotly.pipeline import build_conversation
+from knotly.renderers.parent import render_parent
+from knotly.utils import ensure_timezone, parse_datetime
 
 
 def read_folder(folder: Path) -> dict:
@@ -86,7 +86,7 @@ def test_mnemonic_collision_suffixes():
         participants=["Tester"],
         turns=turns,
     )
-    from threadopolis.pipeline import _stabilize_mnemonics
+    from knotly.pipeline import _stabilize_mnemonics
     _stabilize_mnemonics(convo)
     mnemonics = [turn.mnemonic for turn in convo.turns]
     assert mnemonics[0] == "repeat-text"
